@@ -1,0 +1,10 @@
+[package]
+name = "webrtc"
+version = "0.1.0"
+authors = ["Ryo Abe <rabe.scor.esys@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+rand = "0.6"
+failure = "0.1.5"
+num = "*"
