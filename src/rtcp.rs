@@ -7,6 +7,9 @@ pub mod report_block;
 pub mod sender_report;
 pub mod receiver_report;
 pub mod source_description;
+pub mod good_bye;
+pub mod rtp_feedback;
+pub mod payload_specific_feedback;
 
 pub type Result<T> = std::result::Result<T, RtcpError>;
 
@@ -36,6 +39,9 @@ pub enum RtcpError {
 
     #[fail(display = "padding size calculation is failed.")]
     InvalidPaddingSize,
+
+    #[fail(display = "Packet size is invalid.")]
+    InvalidPacketLength,
 }
 
 impl From<OctetsError> for RtcpError{

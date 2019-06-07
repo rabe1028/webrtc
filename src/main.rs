@@ -1,16 +1,19 @@
 use std::net::{TcpStream, TcpListener};
 use std::io::{Write};
 
-use webrtc::packet::{RtpPacket};
+//use webrtc::packet::{RtpPacket};
 
 fn main(){
+    
     use std::mem;
 
+    /*
     let p = RtpPacket::new();
     println!("{:?}",p);
     let temp : u32 = 100;
     let temp_ss = unsafe {mem::transmute::<u32,[u8;4]>(temp) };
     println!("{:?}",temp_ss);
+    */
 }
 
 /*
