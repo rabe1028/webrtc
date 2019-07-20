@@ -43,11 +43,19 @@ const RTCP_REPORT_BLOCK_LENGTH : usize = 24;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct RtcpReceiverReportPacket{
-    ssrc : u32,
+    ssrc : u32,                     // 4bytes
     reports : Vec<RtcpReportBlock>,
 }
 
 impl RtcpReceiverReportPacket{
+    pub fn get_length(&self) -> u32 {
+        4 + self.reports.len() as u32 * RtcpReportBlock::get_length()
+    }
+
+    pub fn get_reports_count(&self) -> u8 {
+        self.reports.len() as u8
+    }
+
     pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()>{
         out.put_u32(self.ssrc)?;
         for item in &self.reports{
@@ -62,12 +70,14 @@ impl RtcpReceiverReportPacket{
         }
         let ssrc = bytes.get_u32()?;
         let mut reports : Vec<RtcpReportBlock> = Vec::new();
-        for i in 0..count{
+        for _ in 0..count{
+            /*
             match RtcpReportBlock::from_bytes(bytes){
                 Ok(v) => {reports.push(v);}
                 Err(v) => {return Err(v)}
             }
-            //reports.push(RtcpReportBlock::from_bytes(bytes)?);
+            */
+            reports.push(RtcpReportBlock::from_bytes(bytes)?);
         }
         Ok(RtcpReceiverReportPacket{ssrc, reports})
     }

@@ -1,18 +1,22 @@
-use crate::rtcp::{Result,RtcpError};
+use crate::rtcp::{Result};
 use crate::octets;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct RtcpReportBlock{
-    ssrc : u32,
-    fraction_lost : u8,
-    packets_lost_accumulation : u32,
-    highest_sequence : u32,
-    jitter : u32,
-    last_sender_report_timestamp : u32,
-    delay : u32,
+    ssrc : u32,                         // 4bytes
+    fraction_lost : u8,                 // 1bytes
+    packets_lost_accumulation : u32,    // 3bytes
+    highest_sequence : u32,             // 4bytes
+    jitter : u32,                       // 4bytes
+    last_sender_report_timestamp : u32, // 4bytes
+    delay : u32,                        // 4bytes
 }
 
 impl RtcpReportBlock{
+    pub fn get_length() -> u32 {
+        4 + 1 + 3 + 4 + 4 + 4 + 4
+    }
+
     pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()>{
         out.put_u32(self.ssrc)?;
         out.put_u8(self.fraction_lost)?;

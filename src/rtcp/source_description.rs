@@ -1,6 +1,5 @@
 
 use crate::rtcp::{Result,RtcpError};
-use crate::rtcp::report_block::RtcpReportBlock;
 use crate::octets;
 
 fn get_padding(len : usize) -> usize{
@@ -16,11 +15,20 @@ struct RtcpSourceDescriptionItem{
 }
 
 struct RtcpSourceDescriptionChunk{
-    ssrc : u32,
+    ssrc : u32, // 4bytes
     items : Vec<RtcpSourceDescriptionItem>,
 }
 
 impl RtcpSourceDescriptionChunk{
+    pub fn get_length(&self) -> u32 {
+        let mut b_length = 4;
+        b_length += self.items.iter().fold(0, |sum, a| sum + 2 + a.data.len());
+        b_length += 1;
+        b_length += get_padding(b_length);
+
+        b_length as u32
+    }
+
     pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()>{
         out.put_u32(self.ssrc)?;
         for item in &self.items{
@@ -37,7 +45,7 @@ impl RtcpSourceDescriptionChunk{
             1 => {out.put_u8( 0)?;},
             2 => {out.put_u16(0)?;},
             3 => {out.put_u24(0)?;},
-            _ => {return Err(RtcpError::InvalidPaddingSize)}
+            _ => {return Err(RtcpError::InvalidPaddingSize)} // unreachable
         }
 
         Ok(())
@@ -72,6 +80,14 @@ pub struct RtcpSourceDescriptionPacket{
 }
 
 impl RtcpSourceDescriptionPacket{
+    pub fn get_length(&self) -> u32 {
+        self.chunks.iter().fold(0, |sum, a| sum + a.get_length())
+    }
+
+    pub fn get_chunks_length(&self) -> u8 {
+        self.chunks.len() as u8
+    }
+
     pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()>{
         for chunk in &self.chunks{
             chunk.to_bytes(out)?;
@@ -81,11 +97,14 @@ impl RtcpSourceDescriptionPacket{
     }
 
     pub fn from_bytes(bytes : &mut octets::Octets, count : u8) -> Result<RtcpSourceDescriptionPacket>{
+        
         let mut chunks = Vec::new();
-        for i in 0..count{
+        for _ in 0..count{
             let chunk = RtcpSourceDescriptionChunk::from_bytes(bytes)?;
             chunks.push(chunk);
         }
+        
+
         Ok(RtcpSourceDescriptionPacket{chunks})
     }
 }

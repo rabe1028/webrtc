@@ -373,6 +373,11 @@ impl<'a> Octets<'a> {
     pub fn to_vec(&self) -> Vec<u8> {
         self.as_ref().to_vec()
     }
+
+    pub fn get_val(&self, index : usize) -> Result<u8> {
+        if index >= self.len() {return Err(OctetsError::Done)}
+        Ok(self.buf[index])
+    }
 }
 
 impl<'a> AsRef<[u8]> for Octets<'a> {

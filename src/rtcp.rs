@@ -42,6 +42,9 @@ pub enum RtcpError {
 
     #[fail(display = "Packet size is invalid.")]
     InvalidPacketLength,
+
+    #[fail(display = "Not implemented.")]
+    NotImplemented,
 }
 
 impl From<OctetsError> for RtcpError{

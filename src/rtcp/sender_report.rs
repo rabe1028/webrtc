@@ -10,13 +10,17 @@ const RTCP_REPORT_BLOCK_LENGTH : usize = 24;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct RtcpSenderInfo{
-    ntp_timestamp : u64,
-    rtp_timestamp : u32,
-    packet_count : u32,
-    octet_count : u32,
+    ntp_timestamp : u64, // 8bytes
+    rtp_timestamp : u32, // 4bytes
+    packet_count : u32,  // 4bytes
+    octet_count : u32,   // 4bytes
 }
 
 impl RtcpSenderInfo{
+    pub fn get_length(&self) -> u32 {
+        8 + 4 + 4 + 4
+    }
+
     pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()>{
         out.put_u64(self.ntp_timestamp)?;
         out.put_u32(self.rtp_timestamp)?;
@@ -37,12 +41,20 @@ impl RtcpSenderInfo{
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct RtcpSenderReportPacket{
-    ssrc : u32,
+    ssrc : u32,                     // 4bytes
     sender_info : RtcpSenderInfo,
     reports : Vec<RtcpReportBlock>,
 }
 
 impl RtcpSenderReportPacket{
+    pub fn get_length(&self) -> u32 {
+        4 + self.sender_info.get_length() + self.reports.len() as u32 * RtcpReportBlock::get_length()
+    }
+
+    pub fn get_reports_count(&self) -> u8 {
+        self.reports.len() as u8
+    }
+
     pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()>{
         out.put_u32(self.ssrc)?;
         self.sender_info.to_bytes(out)?;
@@ -57,15 +69,25 @@ impl RtcpSenderReportPacket{
             return Err(RtcpError::InvalidPacketHeader);
             //return Err(Error::InvalidPacketLength);
         }
+
         let ssrc = bytes.get_u32()?;
         let sender_info = RtcpSenderInfo::from_bytes(bytes)?;
+
+        
         let mut reports : Vec<RtcpReportBlock> = Vec::new();
-        for i in 0..count{
+        for _ in 0..count{
             match RtcpReportBlock::from_bytes(bytes){
                 Ok(v) => {reports.push(v);}
                 Err(v) => {return Err(v)}
             }
         }
+        
+        /*
+        let reports : Vec<RtcpReportBlock> = (0..count).map(|_| {
+            RtcpReportBlock::from_bytes(bytes).unwrap()
+        }).collect();
+        */
+
         Ok(RtcpSenderReportPacket{ssrc, sender_info, reports})
     }
 }
