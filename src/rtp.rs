@@ -6,7 +6,7 @@ use crate::OctetsError;
 
 pub type Result<T> = std::result::Result<T, RtpError>;
 
-#[derive(Fail, Debug)]
+#[derive(Fail, Debug, PartialEq)]
 pub enum RtpError {
     #[fail(display = "Octets manipulate failed: {:?}", error)]
     OctetsError{
@@ -29,6 +29,9 @@ pub enum RtpError {
 
     #[fail(display = "Packet extension is broken.")]
     InvalidPacketHeaderExtensionSize,
+
+    #[fail(display = "RTP packet padding length is invalid.")]
+    InvalidPacketPaddingLength,
 }
 
 impl From<OctetsError> for RtpError{

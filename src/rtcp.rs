@@ -13,7 +13,7 @@ pub mod payload_specific_feedback;
 
 pub type Result<T> = std::result::Result<T, RtcpError>;
 
-#[derive(Fail, Debug)]
+#[derive(Fail, Debug, PartialEq)]
 pub enum RtcpError {
     #[fail(display = "Octets manipulate failed: {:?}", error)]
     OctetsError{

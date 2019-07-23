@@ -4,7 +4,7 @@ use crate::rtcp::report_block::RtcpReportBlock;
 //use crate::{Result,Error};
 use crate::octets;
 
-const RTCP_HEADER_LENGTH : usize = 8;
+const RTCP_HEADER_LENGTH : usize = 4; // ssrc = 32bit = 4bytes
 const RTCP_SR_INFO_LENGTH : usize = 20;
 const RTCP_REPORT_BLOCK_LENGTH : usize = 24;
 
@@ -66,7 +66,7 @@ impl RtcpSenderReportPacket{
 
     pub fn from_bytes(bytes : &mut octets::Octets, count : u8) -> Result<RtcpSenderReportPacket>{
         if bytes.len() != RTCP_HEADER_LENGTH + RTCP_SR_INFO_LENGTH + RTCP_REPORT_BLOCK_LENGTH * count as usize{
-            return Err(RtcpError::InvalidPacketHeader);
+            return Err(RtcpError::InvalidPacketLength);
             //return Err(Error::InvalidPacketLength);
         }
 
@@ -89,5 +89,22 @@ impl RtcpSenderReportPacket{
         */
 
         Ok(RtcpSenderReportPacket{ssrc, sender_info, reports})
+    }
+}
+
+#[cfg(test)]
+mod test{
+    use crate::octets;
+    use super::{*};
+
+    #[test]
+    fn packet_too_short() {
+        let mut raw_packet = [];
+
+        let mut raw_octet = octets::Octets::with_slice(&mut raw_packet);
+
+        let sr = RtcpSenderReportPacket::from_bytes(&mut raw_octet, 0);
+
+        assert_eq!(sr, Err(RtcpError::InvalidPacketLength));
     }
 }
