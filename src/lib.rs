@@ -1,44 +1,38 @@
-
 use failure::Fail;
 
 pub mod octets;
-pub mod rtp;
 pub mod rtcp;
+pub mod rtp;
+pub mod sdp;
 
 pub type Result<T> = std::result::Result<T, OctetsError>;
 //pub type Result<T> = std::result::Result<T, WebrtcError>;
 
 #[derive(Fail, Debug)]
-pub enum WebrtcError{
+pub enum WebrtcError {
     #[fail(display = "Octets manipulate failed: {:?}", error)]
-    OctetsError{
-        error : OctetsError,
-    },
+    OctetsError { error: OctetsError },
     #[fail(display = "RTP failed: {:?}", error)]
-    RtpError{
-        error : rtp::RtpError,
-    },
+    RtpError { error: rtp::RtpError },
     #[fail(display = "RTCP failed: {:?}", error)]
-    RtcpError{
-        error : rtcp::RtcpError,
-    },
+    RtcpError { error: rtcp::RtcpError },
 }
 
-impl From<OctetsError> for WebrtcError{
-    fn from(error : OctetsError) -> Self {
+impl From<OctetsError> for WebrtcError {
+    fn from(error: OctetsError) -> Self {
         WebrtcError::OctetsError { error }
     }
 }
 
-impl From<rtp::RtpError> for WebrtcError{
-    fn from(error : rtp::RtpError) -> Self {
-        WebrtcError::RtpError {error}
+impl From<rtp::RtpError> for WebrtcError {
+    fn from(error: rtp::RtpError) -> Self {
+        WebrtcError::RtpError { error }
     }
 }
 
-impl From<rtcp::RtcpError> for WebrtcError{
-    fn from(error : rtcp::RtcpError) -> Self {
-        WebrtcError::RtcpError {error}
+impl From<rtcp::RtcpError> for WebrtcError {
+    fn from(error: rtcp::RtcpError) -> Self {
+        WebrtcError::RtcpError { error }
     }
 }
 
@@ -47,11 +41,11 @@ impl From<rtcp::RtcpError> for WebrtcError{
 #[repr(C)]
 pub enum OctetsError {
     /// There is no more work to do.
-    Done               = -1,
+    Done = -1,
 
     /// The provided buffer is too short.
-    BufferTooShort     = -2,
-
+    BufferTooShort = -2,
+    /*
     /// The provided packet cannot be parsed because its version is unknown.
     UnknownVersion = -3,
 
@@ -65,4 +59,5 @@ pub enum OctetsError {
     InvalidPacketHeaderExtensionSize = -7,
 
     InvalidPacketLength = -8,
+    */
 }

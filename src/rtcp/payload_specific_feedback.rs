@@ -31,20 +31,20 @@ block  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 */
 
-use crate::rtcp::{Result,RtcpError};
+use crate::rtcp::{Result, RtcpError};
 
 //use crate::{Result,Error};
 use crate::octets;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct RtcpPayloadSpecificFeedbackPacket {
-    format : u8,
-    ssrc : u32,         // 4bytes
-    media_ssrc : u32,   // 4bytes
-    fci : Vec<u8>
+    format: u8,
+    ssrc: u32,       // 4bytes
+    media_ssrc: u32, // 4bytes
+    fci: Vec<u8>,
 }
 
-impl RtcpPayloadSpecificFeedbackPacket{
+impl RtcpPayloadSpecificFeedbackPacket {
     pub fn get_length(&self) -> u32 {
         4 + 4 + self.fci.len() as u32
     }
@@ -53,7 +53,7 @@ impl RtcpPayloadSpecificFeedbackPacket{
         self.format
     }
 
-    pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()>{
+    pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()> {
         out.put_u32(self.ssrc)?;
         out.put_u32(self.media_ssrc)?;
         out.put_bytes(&self.fci)?;
@@ -61,9 +61,12 @@ impl RtcpPayloadSpecificFeedbackPacket{
         Ok(())
     }
 
-    pub fn from_bytes(bytes : &mut octets::Octets, format : u8) -> Result<RtcpPayloadSpecificFeedbackPacket>{
+    pub fn from_bytes(
+        bytes: &mut octets::Octets,
+        format: u8,
+    ) -> Result<RtcpPayloadSpecificFeedbackPacket> {
         if bytes.len() < 8 {
-            return Err(RtcpError::InvalidPacketLength)
+            return Err(RtcpError::InvalidPacketLength);
         }
 
         let ssrc = bytes.get_u32()?;
@@ -71,6 +74,11 @@ impl RtcpPayloadSpecificFeedbackPacket{
 
         let fci = bytes.to_vec();
 
-        Ok(RtcpPayloadSpecificFeedbackPacket{format, ssrc, media_ssrc, fci})
+        Ok(RtcpPayloadSpecificFeedbackPacket {
+            format,
+            ssrc,
+            media_ssrc,
+            fci,
+        })
     }
 }

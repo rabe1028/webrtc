@@ -222,22 +222,22 @@ impl<'a> Octets<'a> {
         match len {
             1 => {
                 self.put_u8(v as u8)?;
-            },
+            }
 
             2 => {
                 let buf = self.put_u16(v as u16)?;
                 buf[0] |= 0x40;
-            },
+            }
 
             4 => {
                 let buf = self.put_u32(v as u32)?;
                 buf[0] |= 0x80;
-            },
+            }
 
             8 => {
                 let buf = self.put_u64(v)?;
                 buf[0] |= 0xc0;
-            },
+            }
 
             _ => panic!("value is too large for varint"),
         }
@@ -374,8 +374,10 @@ impl<'a> Octets<'a> {
         self.as_ref().to_vec()
     }
 
-    pub fn get_val(&self, index : usize) -> Result<u8> {
-        if index >= self.len() {return Err(OctetsError::Done)}
+    pub fn get_val(&self, index: usize) -> Result<u8> {
+        if index >= self.len() {
+            return Err(OctetsError::Done);
+        }
         Ok(self.buf[index])
     }
 }

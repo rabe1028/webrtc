@@ -15,7 +15,7 @@
 
            Figure 3: Common Packet Format for Feedback Messages
 
-   
+
    The Feedback Control Information (FCI) field has the following Syntax
    (Figure 4):
 
@@ -28,31 +28,31 @@
                Figure 4: Syntax for the Generic NACK message
 */
 
-use crate::rtcp::{Result,RtcpError};
+use crate::rtcp::{Result, RtcpError};
 
 //use crate::{Result,Error};
 use crate::octets;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct RtcpRtpFeedbackPacket {
-    format : u8,        // 1bytes
-    ssrc : u32,         // 4bytes
-    media_ssrc : u32,   // 4bytes
-    lost : Option<Vec<u16>>,
+    format: u8,      // 1bytes
+    ssrc: u32,       // 4bytes
+    media_ssrc: u32, // 4bytes
+    lost: Option<Vec<u16>>,
 }
 
-impl RtcpRtpFeedbackPacket{
-
+impl RtcpRtpFeedbackPacket {
     pub fn get_length(&self) -> u32 {
         let mut b_length = 4 + 4;
 
         if let Some(ref v) = self.lost {
-            let mut pid : u16 = v[0];
-            let mut _blp : u16 = 0;
+            let mut pid: u16 = v[0];
+            let mut _blp: u16 = 0;
             for p in v[1..].iter() {
-                let d : u16 = *p - pid - 1;
-                if d < 16 { _blp |= 1 << d }
-                else{
+                let d: u16 = *p - pid - 1;
+                if d < 16 {
+                    _blp |= 1 << d
+                } else {
                     b_length += 4;
                     pid = *p;
                     _blp = 0;
@@ -68,17 +68,18 @@ impl RtcpRtpFeedbackPacket{
         self.format
     }
 
-    pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()>{
+    pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()> {
         out.put_u32(self.ssrc)?;
         out.put_u32(self.media_ssrc)?;
 
         if let Some(ref v) = self.lost {
-            let mut pid : u16 = v[0];
-            let mut blp : u16 = 0;
+            let mut pid: u16 = v[0];
+            let mut blp: u16 = 0;
             for p in v[1..].iter() {
-                let d : u16 = *p - pid - 1;
-                if d < 16 { blp |= 1 << d }
-                else{
+                let d: u16 = *p - pid - 1;
+                if d < 16 {
+                    blp |= 1 << d
+                } else {
                     out.put_u16(pid)?;
                     out.put_u16(blp)?;
                     pid = *p;
@@ -92,12 +93,12 @@ impl RtcpRtpFeedbackPacket{
         Ok(())
     }
 
-    pub fn from_bytes(bytes : &mut octets::Octets, format : u8) -> Result<RtcpRtpFeedbackPacket>{
+    pub fn from_bytes(bytes: &mut octets::Octets, format: u8) -> Result<RtcpRtpFeedbackPacket> {
         // 8bytes = ssrc + media_ssrc
         // packet length = 8 + 4 * k [bytes]
         // k is feedback control information counts
         if bytes.len() < 8 || bytes.len() % 4 != 0 {
-            return Err(RtcpError::InvalidPacketLength)
+            return Err(RtcpError::InvalidPacketLength);
         }
 
         let ssrc = bytes.get_u32()?;
@@ -125,6 +126,11 @@ impl RtcpRtpFeedbackPacket{
             None
         };
 
-        Ok(RtcpRtpFeedbackPacket{format, ssrc, media_ssrc, lost})
+        Ok(RtcpRtpFeedbackPacket {
+            format,
+            ssrc,
+            media_ssrc,
+            lost,
+        })
     }
 }

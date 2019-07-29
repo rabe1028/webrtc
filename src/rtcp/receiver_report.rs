@@ -31,23 +31,23 @@ block  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 */
 
-use crate::rtcp::{Result,RtcpError};
 use crate::rtcp::report_block::RtcpReportBlock;
+use crate::rtcp::{Result, RtcpError};
 
 //use crate::{Result,Error};
 use crate::octets;
 
-const RTCP_HEADER_LENGTH : usize = 8;
-const RTCP_SR_INFO_LENGTH : usize = 20;
-const RTCP_REPORT_BLOCK_LENGTH : usize = 24;
+const RTCP_HEADER_LENGTH: usize = 8;
+const RTCP_SR_INFO_LENGTH: usize = 20;
+const RTCP_REPORT_BLOCK_LENGTH: usize = 24;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub struct RtcpReceiverReportPacket{
-    ssrc : u32,                     // 4bytes
-    reports : Vec<RtcpReportBlock>,
+pub struct RtcpReceiverReportPacket {
+    ssrc: u32, // 4bytes
+    reports: Vec<RtcpReportBlock>,
 }
 
-impl RtcpReceiverReportPacket{
+impl RtcpReceiverReportPacket {
     pub fn get_length(&self) -> u32 {
         4 + self.reports.len() as u32 * RtcpReportBlock::get_length()
     }
@@ -56,21 +56,21 @@ impl RtcpReceiverReportPacket{
         self.reports.len() as u8
     }
 
-    pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()>{
+    pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()> {
         out.put_u32(self.ssrc)?;
-        for item in &self.reports{
+        for item in &self.reports {
             item.to_bytes(out)?;
         }
         Ok(())
     }
 
-    pub fn from_bytes(bytes : &mut octets::Octets, count : u8) -> Result<RtcpReceiverReportPacket>{
-        if bytes.len() != RTCP_HEADER_LENGTH + RTCP_REPORT_BLOCK_LENGTH * count as usize{
+    pub fn from_bytes(bytes: &mut octets::Octets, count: u8) -> Result<RtcpReceiverReportPacket> {
+        if bytes.len() != RTCP_HEADER_LENGTH + RTCP_REPORT_BLOCK_LENGTH * count as usize {
             return Err(RtcpError::InvalidPacketHeader);
         }
         let ssrc = bytes.get_u32()?;
-        let mut reports : Vec<RtcpReportBlock> = Vec::new();
-        for _ in 0..count{
+        let mut reports: Vec<RtcpReportBlock> = Vec::new();
+        for _ in 0..count {
             /*
             match RtcpReportBlock::from_bytes(bytes){
                 Ok(v) => {reports.push(v);}
@@ -79,6 +79,6 @@ impl RtcpReceiverReportPacket{
             */
             reports.push(RtcpReportBlock::from_bytes(bytes)?);
         }
-        Ok(RtcpReceiverReportPacket{ssrc, reports})
+        Ok(RtcpReceiverReportPacket { ssrc, reports })
     }
 }

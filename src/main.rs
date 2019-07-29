@@ -1,10 +1,9 @@
-use std::net::{TcpStream, TcpListener};
-use std::io::{Write};
+use std::io::Write;
+use std::net::{TcpListener, TcpStream};
 
 //use webrtc::packet::{RtpPacket};
 
-fn main(){
-    
+fn main() {
     use std::mem;
 
     /*

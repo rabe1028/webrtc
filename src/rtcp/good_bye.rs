@@ -17,13 +17,13 @@ BYE: Goodbye RTCP Packet
 
 */
 
-use crate::rtcp::{Result,RtcpError};
+use crate::rtcp::{Result, RtcpError};
 
 //use crate::{Result,Error};
 use crate::octets;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub struct RtcpGoodByePacket(Vec<u32>);
+pub struct RtcpGoodByePacket(pub Vec<u32>);
 
 impl RtcpGoodByePacket {
     pub fn get_length(&self) -> u32 {
@@ -34,23 +34,22 @@ impl RtcpGoodByePacket {
         self.0.len() as u8
     }
 
-    pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()>{
+    pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()> {
         //out.put_bytes(&self.0)?;
-        
+
         for item in &self.0 {
-            out.put_u32(*item)?; // 実態をコピー
-            //out.put_u32(self.0[i])?;
+            out.put_u32(*item)?; // 実体をコピー
+                                 //out.put_u32(self.0[i])?;
         }
         Ok(())
     }
 
-    pub fn from_bytes(bytes : &mut octets::Octets, count : u8) -> Result<RtcpGoodByePacket>{
+    pub fn from_bytes(bytes: &mut octets::Octets, count: u8) -> Result<RtcpGoodByePacket> {
         // ssrc length must be longer than 4 * count, because ssrc is 32bytes unsigned int.
-        if bytes.len() < 4 * count as usize{
-            return Err(RtcpError::InvalidPacketLength)
+        if bytes.len() < 4 * count as usize {
+            return Err(RtcpError::InvalidPacketLength);
         }
-        let source : Vec<u32> = if count > 0 {
-    
+        let source: Vec<u32> = if count > 0 {
             let mut tmp = Vec::new();
 
             for _ in 0..count {
@@ -58,13 +57,13 @@ impl RtcpGoodByePacket {
             }
 
             tmp
-            /*
-            (0..count).map(|_| {
-                bytes.get_u32()
-            }).collect::<Vec<_>>()
-            */
+        /*
+        (0..count).map(|_| {
+            bytes.get_u32()
+        }).collect::<Vec<_>>()
+        */
 
-            //bytes.get_bytes(count as usize)?.to_vec()
+        //bytes.get_bytes(count as usize)?.to_vec()
         } else {
             Vec::new()
         };
