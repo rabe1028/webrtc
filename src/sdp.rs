@@ -300,7 +300,9 @@ impl SessionDescription {
         Ok(session)
     }
 
-    pub fn add_media(self, media_sdp : &Vec<Vec<&str>>) -> Result<self
+    pub fn add_media(self, media_sdp : &Vec<Vec<&str>>) -> Result<Self> {
+        Ok(self)
+    }
 }
 
 #[cfg(test)]
@@ -359,8 +361,8 @@ a=ssrc:1944796561 label:ec1eb8de-8df8-4956-ae81-879e5d062d12";
 
         let (session, media) = make_groups(d);
         
-        let out = SessionDescription::parse(&session).unwrap().add_media(media);
-        
+        let out = SessionDescription::parse(&session).unwrap().add_media(&media);
+
         println!("{:?}", out);
 
         //println!("{}", sdp.unwrap() );
