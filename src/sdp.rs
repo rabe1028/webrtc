@@ -239,6 +239,28 @@ impl TimeDescription {
     }
 }
 
+pub enum MediaKind {
+    Audio,
+    Video,
+    Text,
+    Application,
+    Message
+}
+
+impl MediaKind {
+    pub fn parse(sdp: &str) -> Result<Self> {
+        //m=<media> <port> <proto> <fmt> ...
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub struct MediaDescription {
+    pub fn parse(media_sdp: &Vec<&str>) -> Result<Self> {
+
+        let mut kind = 
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct SessionDescription {
     version: u64,
@@ -250,6 +272,7 @@ pub struct SessionDescription {
     email_address: Option<String>,
     phone_number: Option<String>,
     attribute: Vec<SessionAttribute>,
+    media : Vec<MediaDescription>
 }
 
 impl SessionDescription {
@@ -290,7 +313,7 @@ impl SessionDescription {
 
         let mut session = SessionDescription::new(version, origin, session_name, time);
 
-        println!("{:?}", session);
+        //println!("{:?}", session);
 
         for item in &split_sdp[4..] {
             //println!("item :{:?}", item);
@@ -301,6 +324,9 @@ impl SessionDescription {
     }
 
     pub fn add_media(self, media_sdp : &Vec<Vec<&str>>) -> Result<Self> {
+        for item in media_sdp {
+            self.media.push(MediaDescription::parse(item)?);
+        }
         Ok(self)
     }
 }
