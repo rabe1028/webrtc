@@ -4,7 +4,6 @@ use std::net::{TcpListener, TcpStream};
 //use webrtc::packet::{RtpPacket};
 
 fn main() {
-    use std::mem;
 
     /*
     let p = RtpPacket::new();
