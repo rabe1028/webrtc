@@ -22,8 +22,11 @@ pions/webrtc
 
 - [x] RTP
     - [x] RTP Packet Struct
-    - [x] RTP Packet Serialize and Deserializer
-    - [] add Header Extension (H.264, H.265, VP8, VP9 etc...)
+    - [x] RTP Packet Serialize and Deserialize
+    - [ ] add Header Extension (H.264, H.265, VP8, VP9 etc...)
     - [x] Serialize and Deserialize test
 
-- [] RTCP Packet
+- [ ] RTCP Packet
+  - [x] RTCP Packet Struct 
+  - [x] RTCP Packet Serialize and Deserialize
+  - [ ] Serialize and Deserialize test
