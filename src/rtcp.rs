@@ -42,6 +42,12 @@ pub enum RtcpError {
     #[fail(display = "Packet size is invalid.")]
     InvalidPacketLength,
 
+    #[fail(display = "RTCP payload-specific feedback length is invalid")]
+    InvalidPsfbPacketLength,
+
+    #[fail(display = "RTCP receiver report length is invalid")]
+    InvalidRrPacketLength,
+
     #[fail(display = "Not implemented.")]
     NotImplemented,
 }

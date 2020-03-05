@@ -13,6 +13,26 @@ pub struct RtcpReportBlock {
 }
 
 impl RtcpReportBlock {
+    pub fn new(
+        ssrc: u32,
+        fraction_lost: u8,
+        packets_lost_accumulation: u32,
+        highest_sequence: u32,
+        jitter: u32,
+        last_sender_report_timestamp: u32,
+        delay: u32,
+    ) -> Self {
+        RtcpReportBlock {
+            ssrc,
+            fraction_lost,
+            packets_lost_accumulation,
+            highest_sequence,
+            jitter,
+            last_sender_report_timestamp,
+            delay,
+        }
+    }
+
     pub fn get_length() -> u32 {
         4 + 1 + 3 + 4 + 4 + 4 + 4
     }

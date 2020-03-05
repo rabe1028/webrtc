@@ -37,7 +37,7 @@ use crate::rtcp::{Result, RtcpError};
 //use crate::{Result,Error};
 use crate::octets;
 
-const RTCP_HEADER_LENGTH: usize = 8;
+const RTCP_HEADER_LENGTH: usize = 4; // ssrc size
 const RTCP_SR_INFO_LENGTH: usize = 20;
 const RTCP_REPORT_BLOCK_LENGTH: usize = 24;
 
@@ -48,6 +48,10 @@ pub struct RtcpReceiverReportPacket {
 }
 
 impl RtcpReceiverReportPacket {
+    pub fn new(ssrc: u32, reports: Vec<RtcpReportBlock>) -> Self {
+        RtcpReceiverReportPacket { ssrc, reports }
+    }
+
     pub fn get_length(&self) -> u32 {
         4 + self.reports.len() as u32 * RtcpReportBlock::get_length()
     }
@@ -58,27 +62,24 @@ impl RtcpReceiverReportPacket {
 
     pub fn to_bytes(&self, out: &mut octets::Octets) -> Result<()> {
         out.put_u32(self.ssrc)?;
-        for item in &self.reports {
-            item.to_bytes(out)?;
-        }
-        Ok(())
+
+        self.reports
+            .iter()
+            .map(|item| item.to_bytes(out))
+            .collect::<Result<Vec<_>>>()
+            .map(|_| {})
     }
 
     pub fn from_bytes(bytes: &mut octets::Octets, count: u8) -> Result<RtcpReceiverReportPacket> {
         if bytes.len() != RTCP_HEADER_LENGTH + RTCP_REPORT_BLOCK_LENGTH * count as usize {
-            return Err(RtcpError::InvalidPacketHeader);
+            return Err(RtcpError::InvalidRrPacketLength);
         }
         let ssrc = bytes.get_u32()?;
-        let mut reports: Vec<RtcpReportBlock> = Vec::new();
-        for _ in 0..count {
-            /*
-            match RtcpReportBlock::from_bytes(bytes){
-                Ok(v) => {reports.push(v);}
-                Err(v) => {return Err(v)}
-            }
-            */
-            reports.push(RtcpReportBlock::from_bytes(bytes)?);
-        }
+
+        let reports = (0..count)
+            .map(|_| RtcpReportBlock::from_bytes(bytes))
+            .collect::<Result<Vec<_>>>()?;
+
         Ok(RtcpReceiverReportPacket { ssrc, reports })
     }
 }

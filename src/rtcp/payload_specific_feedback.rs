@@ -45,6 +45,15 @@ pub struct RtcpPayloadSpecificFeedbackPacket {
 }
 
 impl RtcpPayloadSpecificFeedbackPacket {
+    pub fn new(format: u8, ssrc: u32, media_ssrc: u32, fci: Vec<u8>) -> Self {
+        RtcpPayloadSpecificFeedbackPacket {
+            format,
+            ssrc,
+            media_ssrc,
+            fci,
+        }
+    }
+
     pub fn get_length(&self) -> u32 {
         4 + 4 + self.fci.len() as u32
     }
@@ -66,7 +75,7 @@ impl RtcpPayloadSpecificFeedbackPacket {
         format: u8,
     ) -> Result<RtcpPayloadSpecificFeedbackPacket> {
         if bytes.len() < 8 {
-            return Err(RtcpError::InvalidPacketLength);
+            return Err(RtcpError::InvalidPsfbPacketLength);
         }
 
         let ssrc = bytes.get_u32()?;

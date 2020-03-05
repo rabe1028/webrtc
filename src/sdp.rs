@@ -81,16 +81,16 @@ a=ssrc:1944796561 label:ec1eb8de-8df8-4956-ae81-879e5d062d12";
         //let split_sdp: Vec<Vec<&str>> = d.split("m=").map(|s| s.lines().collect()).collect();
 
         //let (session, media) = make_groups(d);
-        
+
         //let out = SessionDescription::parse(&session).unwrap().add_media(&media);
 
         //println!("{:?}", out);
 
         let sdp = webrtc_sdp::parse_sdp(d, true).unwrap();
 
-        println!("version: {}", sdp.version );
-        for media in sdp.media{
-            println!("media: {}", media );
+        //println!("version: {}", sdp.version);
+        for media in sdp.media {
+            //println!("media: {}", media);
         }
     }
 
@@ -138,13 +138,13 @@ a=ssrc:1944796561 msid:TF6VRif1dxuAfe5uefrV2953LhUZt1keYvxU ec1eb8de-8df8-4956-a
 a=ssrc:1944796561 mslabel:TF6VRif1dxuAfe5uefrV2953LhUZt1keYvxU
 a=ssrc:1944796561 label:ec1eb8de-8df8-4956-ae81-879e5d062d12";
 
-        let d = d.to_string().replace("a=sendrecv","a=inactive");
+        let d = d.to_string().replace("a=sendrecv", "a=inactive");
 
         let sdp = webrtc_sdp::parse_sdp(&d, true).unwrap();
 
-        println!("version: {}", sdp.version );
-        for media in sdp.media{
-            println!("media: {}", media );
+        //println!("version: {}", sdp.version);
+        for media in sdp.media {
+            //println!("media: {}", media);
         }
     }
 }
