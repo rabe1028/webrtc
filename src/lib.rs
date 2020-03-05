@@ -5,6 +5,8 @@ pub mod rtcp;
 pub mod rtp;
 pub mod sdp;
 
+pub mod rtcpeerconnection;
+
 pub type Result<T> = std::result::Result<T, OctetsError>;
 //pub type Result<T> = std::result::Result<T, WebrtcError>;
 
