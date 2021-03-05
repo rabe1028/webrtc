@@ -7,6 +7,9 @@ pub mod sdp;
 
 pub mod rtcpeerconnection;
 
+pub mod rtcrtpparameters;
+pub mod rtcdtlstransport;
+
 pub type Result<T> = std::result::Result<T, OctetsError>;
 //pub type Result<T> = std::result::Result<T, WebrtcError>;
 

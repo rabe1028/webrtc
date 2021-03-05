@@ -90,7 +90,11 @@ a=ssrc:1944796561 label:ec1eb8de-8df8-4956-ae81-879e5d062d12";
 
         //println!("version: {}", sdp.version);
         for media in sdp.media {
-            //println!("media: {}", media);
+            //println!("media: \n{}", media);
+            for attribute in media.get_attributes() {
+                println!("attribute : {}", attribute);
+            }
+            //println!("media attribute: {:?}", media.get_attributes());
         }
     }
 

@@ -10,3 +10,5 @@ failure = "0.1.5"
 num = "*"
 webrtc-sdp = "0.3.1"
 serde_json = "*"
+openssl = { version = "0.10", features = ["vendored"] }
+chrono = "*"

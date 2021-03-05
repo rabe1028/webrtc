@@ -3,6 +3,9 @@
 
 use crate::octets;
 use crate::rtp::{Result, RtpError};
+
+use crate::rtcrtpparameters::{RtcRtpParameter};
+
 /*
     The RTP header has the following format:
 
@@ -86,6 +89,79 @@ fn unpack_header_extension(
     }
 
     Ok(extensions)
+}
+
+struct HeaderExtensions {
+    abs_send_time: Option<usize>, // TODO: Change time format?
+    audio_level: Option<usize>,
+    mid: Option<usize>,
+    repaired_rtp_stream_id: Option<usize>,
+    rtp_stream_id: Option<usize>,
+    transmission_offset: Option<usize>,
+    transport_sequence_number: Option<usize>,
+}
+
+impl HeaderExtensions {
+    pub fn new() -> HeaderExtensions {
+        HeaderExtensions {
+            abs_send_time: None,
+            audio_level: None,
+            mid: None,
+            repaired_rtp_stream_id: None,
+            rtp_stream_id: None,
+            transmission_offset: None,
+            transport_sequence_number: None,
+        }
+    }
+}
+
+struct HeaderExtensionsMap {
+    ids: HeaderExtensions
+}
+
+impl HeaderExtensionsMap {
+    fn configure(&mut self, param: RtcRtpParameter) -> () {
+        for ext in param.header_extensions {
+            match ext.uri.as_str() {
+                "urn:ietf:params:rtp-hdrext:sdes:mid" => { self.ids.mid = Some(ext.id); }
+                "urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id" => {
+                    self.ids.repaired_rtp_stream_id = Some(ext.id);
+                }
+                "urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id" => {
+                    self.ids.rtp_stream_id = Some(ext.id);
+                }
+                "http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time" => {
+                    self.ids.abs_send_time = Some(ext.id);
+                }
+                "urn:ietf:params:rtp-hdrext:toffset" => {
+                    self.ids.transmission_offset = Some(ext.id);
+                }
+                "urn:ietf:params:rtp-hdrext:ssrc-audio-level" => {
+                    self.ids.audio_level = Some(ext.id);
+                }
+                "http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01" => {
+                    self.ids.transport_sequence_number = Some(ext.id);
+                }
+                _ => {
+                    // unsupported extensions
+                    unreachable!();
+                }
+            }
+        }
+    }
+
+    fn get(&self, bytes: &mut octets::Octets, profile: u16) -> HeaderExtensions {
+        let mut values = HeaderExtensions::new();
+        for (x_id, x_value) in unpack_header_extension(bytes, profile).unwrap() {
+            let x_id = x_id as usize;
+            // if let Some(v) = self.ids.mid {
+            //     if x_id == v {
+            //         values.mid = Some(String::from_utf8(x_value).unwrap());
+            //     }
+            // }
+        }
+        unimplemented!()
+    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
